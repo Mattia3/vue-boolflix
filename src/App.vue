@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="">
     <header>
       <div class="header-container">
         <h1 class="text-danger">BOOLFlIX</h1>
@@ -12,24 +12,38 @@
       </div>
     </header>
 
-      <ul>
-        <li v-for="movie in movies" :key="movie.id">
-          {{ movie.title }} {{ movie.original_title }} <br>
-          <img class="bandiere-immagini" :src="langFlags[movie.original_language]" alt=""> {{movie.vote_average}}
-        
-        </li>
-      </ul>
+    <div class="background-color">
+      <div class="row row-cols-3 container m-auto py-5">
+       <div class="col"  v-for="movie in movies" :key="movie.id">
+          <ul>
+            <li>
+             <img :src="imgPath(movie.poster_path)" alt="">
+              Title: {{ movie.title }} <br> 
+              Title Original: {{ movie.original_title }} <br>
+              Nazionalità: <img class="bandiere-immagini" :src="!langFlags[movie.original_language] ? urlWord : langFlags[movie.original_language]" alt=""> <br>
+              Voto: <i v-for="icon in 5" :key="icon" :class="icon <= getNumberoIntero(movie) ? 'fa fa-star' :  'fa fa-star-o '" aria-hidden="true"></i>
+                 
+            </li>
+          </ul>
+        </div>
+      </div>
 
-       
-      <ul>
+     <h1>Serie tv</h1>
+      <div class="row row-cols-3 container m-auto mt-5">
         
-        <li v-for="serie in series" :key="serie.id">
-           {{serie.name}} {{serie.original_name}} <br>     
-          <img class="bandiere-immagini" :src="langFlags[serie.original_language]" alt="">
-           {{ serie.vote_average }}
-        </li>
-      </ul>
-   
+        <div class="col" v-for="serie in series" :key="serie.id">
+          <ul>
+            <li>
+              <img :src="imgPath(serie.poster_path)" alt="">
+              Title: {{serie.name}} <br> 
+              Title Original: {{serie.original_name}} <br>     
+              Nazionalità: <img class="bandiere-immagini" :src="!langFlags[serie.original_language] ? urlWord : langFlags[serie.original_language]" alt=""> <br>
+              Voto: <i v-for="icon in 5" :key="icon" :class="icon <= getNumberoIntero(serie) ? 'fa fa-star' :  'fa fa-star-o '" aria-hidden="true"></i>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -39,6 +53,7 @@ import axios from "axios";
 
 export default {
   name: 'App',
+ 
   data(){
     return{
       apiKey: "66da9c9715a8aa6ea7123977e1274068",
@@ -54,9 +69,11 @@ export default {
         usa: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Flag_of_the_United_States_%28Pantone%29.svg/1920px-Flag_of_the_United_States_%28Pantone%29.svg.png"
       },
       series: [],
-      urlImage: "http://image.tmdb.org/t/p/w500"
+      urlWord: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Earth_Eastern_Hemisphere.jpg/260px-Earth_Eastern_Hemisphere.jpg",
+      
     }
   },
+ 
   components: {
    
   },
@@ -76,18 +93,37 @@ export default {
     addMovie(){
       this.searchAll("/search/movie", this.inputText, "movies");
       this.searchAll("/search/tv", this.inputText, "series");
-    }
+    },
+
+    imgPath(posterPath){
+     const pathUrl = "https://image.tmdb.org/t/p/";
+     const imgSize = "w342";
+     
+      if(!posterPath){
+        return require("@/assets/logo.png")
+      }
+      return pathUrl + imgSize + posterPath;
+    },
+
+    getNumberoIntero(type){
+      let votoFinale = type.vote_average / 2;
+      return Math.ceil( votoFinale ) 
+    },
+
+   
+
+
+   
   },
 
-  mounted() {
-    
-  }
+ 
 }
+  
 </script>
 
 <style lang="scss">
 @import "~bootstrap/scss/bootstrap";
-
+@import "~font-awesome/css/font-awesome.min.css";
 
 .header-container{
     display: flex;
@@ -105,5 +141,13 @@ export default {
 
 .bandiere-immagini{
   width: 30px;
+}
+
+ul{
+  list-style: none;
+}
+
+.background-color{
+  background-color: lightgray;
 }
 </style>
